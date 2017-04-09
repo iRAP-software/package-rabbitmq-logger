@@ -5,10 +5,12 @@
  * is pushed out to all subscribers and "disappears" immediately afterwards.
  */
 
+namespace iRAP\RabbitmqLogger;
+
 class RabbitmqExchangeLogger implements \iRAP\Logging\LoggerInterface
 {
     private $m_channel;
-    
+    private $m_exchangeName;
     
     /**
      * Create the RabbitmqExchangeLogger.
@@ -20,6 +22,8 @@ class RabbitmqExchangeLogger implements \iRAP\Logging\LoggerInterface
      */
     public function __construct($host, $username, $password, $exchangeName, $port=5672)
     {
+        $this->m_exchangeName = $exchangeName;
+        
         $connection = new \PhpAmqpLib\Connection\AMQPStreamConnection(
             $host, 
             $port, 
@@ -88,7 +92,7 @@ class RabbitmqExchangeLogger implements \iRAP\Logging\LoggerInterface
         
         $logString = json_encode($logArray);
         $msg = new \PhpAmqpLib\Message\AMQPMessage($logString);
-        $this->m_channel->basic_publish($msg, EXCHANGE_NAME);
+        $this->m_channel->basic_publish($msg, $this->m_exchangeName);
     }
 
     public function notice($message, array $context = array()) 

@@ -7,8 +7,11 @@
  * that service has downtime for whatever reason.
  */
 
+namespace iRAP\RabbitmqLogger;
+
 class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
 {
+    private $m_queueName;
     private $m_channel;
     
      /**
@@ -21,6 +24,8 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
      */
     public function __construct($host, $user, $password, $queueName, $port=5672) 
     {
+        $this->m_queueName = $queueName;
+        
         $connection = new \PhpAmqpLib\Connection\AMQPStreamConnection(
             $host, 
             $port, 
@@ -93,7 +98,7 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
             array('delivery_mode' => 2) # make message persistent
         );
 
-        $this->m_channel->basic_publish($msg, '', RABBITMQ_QUEUE_NAME);
+        $this->m_channel->basic_publish($msg, '', $this->m_queueName);
     }
     
     
