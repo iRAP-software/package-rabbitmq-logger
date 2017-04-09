@@ -9,6 +9,7 @@ require_once(__DIR__ . '/settings.php');
 require_once(__DIR__ . '/../vendor/autoload.php');
 
 
+
 # Test logging to a queue.
 $logger = new iRAP\RabbitmqLogger\RabbitmqQueueLogger(
     RABBITMQ_HOST,
@@ -16,6 +17,8 @@ $logger = new iRAP\RabbitmqLogger\RabbitmqQueueLogger(
     RABBITMQ_PASSWORD,
     RABBITMQ_QUEUE_NAME
 );
+
+
 
 $logger->debug("this is a plain debug log for a queue");
 $logger->error("this is an error log for a queue with context", array('hello' => 'world'));
@@ -25,9 +28,10 @@ $logger->error("this is an error log for a queue with context", array('hello' =>
 $exchangeLogger = new iRAP\RabbitmqLogger\RabbitmqExchangeLogger(
     RABBITMQ_HOST, 
     RABBITMQ_USER, 
-    RABBITMQ_USER, 
+    RABBITMQ_PASSWORD, 
     RABBITMQ_EXCHANGE_NAME
 );
+
 
 $exchangeLogger->debug("this is a plain debug log for an exchange");
 $exchangeLogger->debug("this is a plain debug log for an exchange with context", array('hello' => 'world'));
