@@ -86,18 +86,25 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
      */
     public function log($level, $message, array $context = array()) 
     {
+        # If contextString is not JSON encodable, then just get a print_r 
+        # representation of it.
+        if (is_null(json_encode($context)))
+        {
+            $context = print_r($context, true);
+        }
+        
         $logArray = array(
             'level' => $level,
             'timestamp' => time(),
             'message' => $message,
             'context' => $context
         );
-
+        
         $msg = new \PhpAmqpLib\Message\AMQPMessage(
             json_encode($logArray, JSON_UNESCAPED_SLASHES),
             array('delivery_mode' => 2) # make message persistent
         );
-
+        
         $this->m_channel->basic_publish($msg, '', $this->m_queueName);
     }
     

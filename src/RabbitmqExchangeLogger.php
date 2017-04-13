@@ -83,6 +83,13 @@ class RabbitmqExchangeLogger implements \iRAP\Logging\LoggerInterface
      */
     public function log($level, $message, array $context = array()) 
     {
+        # If contextString is not JSON encodable, then just get a print_r 
+        # representation of it.
+        if (is_null(json_encode($context)))
+        {
+            $context = print_r($context, true);
+        }
+        
         $logArray = array(
             'level' => $level,
             'timestamp' => time(),
