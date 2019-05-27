@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.5.0",
         "php-amqplib/php-amqplib": "2.9.*",
-        "irap/logging" : "dev-aa-sr4s-upgrade"
+        "irap/logging" : "dev-aa-upgrade"
     },
     "autoload": {
         "psr-4": {
