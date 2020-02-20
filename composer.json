@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "php-amqplib/php-amqplib": "2.9.*",
+        "php-amqplib/php-amqplib": "2.11.*",
         "irap/logging" : "2.0.*"
     },
     "autoload": {
