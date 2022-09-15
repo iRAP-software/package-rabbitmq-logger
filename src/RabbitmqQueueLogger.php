@@ -13,6 +13,7 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
 {
     private $m_queueName;
     private $m_channel;
+    private $m_source = 'n/s';
     
      /**
      * Create the RabbitmqQueueLogger.
@@ -22,7 +23,7 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
      * @param string $queueName - the name of the queue to publish to.
      * @param int $port - optional - the port of the server. Defaults to 5672.
      */
-    public function __construct($host, $user, $password, $queueName, $port=5672) 
+    public function __construct($host, $user, $password, $queueName, $port=5672, $source=null) 
     {
         $this->m_queueName = $queueName;
         
@@ -45,6 +46,16 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
             $arguments = null,
             $ticket = null
         );
+        
+        // if the project constant is defined
+        if(defined("SERVICE_NAME")) {
+            $this->m_source = SERVICE_NAME;
+        }
+        // overwrite the value if one is actually passed to the object
+        if($source) {
+            $this->m_source = $source;
+        }
+
     }
     
     public function alert($message, array $context = array()) 
@@ -99,8 +110,9 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
             'level' => $level,
             'timestamp' => time(),
             'message' => $message,
-            'context' => $context
-        );
+            'context' => $context,
+            'source' => $this->m_source
+        );      
         
         $msg = new \PhpAmqpLib\Message\AMQPMessage(
             json_encode($logArray, JSON_UNESCAPED_SLASHES),
