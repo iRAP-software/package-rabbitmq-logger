@@ -22,6 +22,7 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
      * @param string $password - the password to connect with.
      * @param string $queueName - the name of the queue to publish to.
      * @param int $port - optional - the port of the server. Defaults to 5672.
+     * @param string $source - optional - the name of the project that is using this library
      */
     public function __construct($host, $user, $password, $queueName, $port=5672, $source=null) 
     {
