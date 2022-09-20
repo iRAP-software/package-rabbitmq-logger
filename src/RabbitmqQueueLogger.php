@@ -104,9 +104,7 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
         {
             $context = print_r($context, true);
         }
-        
-        $message = $this->serviceName($message);
-        
+                
         $logArray = array(
             'level' => $level,
             'timestamp' => time(),
@@ -132,20 +130,5 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
     public function warning($message, array $context = array()) 
     {
         $this->log(\iRAP\Logging\LogLevel::WARNING, $message, $context);
-    }
-
-    /**
-     * Method which will add the value of SERVICE_NAME to the log message as a prefix,
-     * if that constant is defined and is not already incorporated into the message
-     */
-    protected function serviceName($message)
-    {
-        if(!defined("SERVICE_NAME")) {
-            return $message;
-        }
-        if(strpos($message,SERVICE_NAME) > -1) {
-            return $message;
-        }
-        return SERVICE_NAME.': '.$message;
     }
 }
