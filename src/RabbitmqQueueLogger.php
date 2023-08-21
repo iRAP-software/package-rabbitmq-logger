@@ -13,6 +13,7 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
 {
     private $m_queueName;
     private $m_channel;
+    private $m_source = 'n/s';
     
      /**
      * Create the RabbitmqQueueLogger.
@@ -21,8 +22,9 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
      * @param string $password - the password to connect with.
      * @param string $queueName - the name of the queue to publish to.
      * @param int $port - optional - the port of the server. Defaults to 5672.
+     * @param string $source - optional - the name of the project that is using this library
      */
-    public function __construct($host, $user, $password, $queueName, $port=5672) 
+    public function __construct($host, $user, $password, $queueName, $port=5672, $source=null) 
     {
         $this->m_queueName = $queueName;
         
@@ -45,6 +47,16 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
             $arguments = null,
             $ticket = null
         );
+        
+        // if the project constant is defined
+        if(defined("SERVICE_NAME")) {
+            $this->m_source = SERVICE_NAME;
+        }
+        // overwrite the value if one is actually passed to the object
+        if($source) {
+            $this->m_source = $source;
+        }
+
     }
     
     public function alert($message, array $context = array()) 
@@ -92,15 +104,14 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
         {
             $context = print_r($context, true);
         }
-        
-        $message = $this->serviceName($message);
-        
+                
         $logArray = array(
             'level' => $level,
             'timestamp' => time(),
             'message' => $message,
-            'context' => $context
-        );
+            'context' => $context,
+            'source' => $this->m_source
+        );      
         
         $msg = new \PhpAmqpLib\Message\AMQPMessage(
             json_encode($logArray, JSON_UNESCAPED_SLASHES),
@@ -119,20 +130,5 @@ class RabbitmqQueueLogger implements \iRAP\Logging\LoggerInterface
     public function warning($message, array $context = array()) 
     {
         $this->log(\iRAP\Logging\LogLevel::WARNING, $message, $context);
-    }
-
-    /**
-     * Method which will add the value of SERVICE_NAME to the log message as a prefix,
-     * if that constant is defined and is not already incorporated into the message
-     */
-    protected function serviceName($message)
-    {
-        if(!defined("SERVICE_NAME")) {
-            return $message;
-        }
-        if(strpos($message,SERVICE_NAME) > -1) {
-            return $message;
-        }
-        return SERVICE_NAME.': '.$message;
     }
 }
