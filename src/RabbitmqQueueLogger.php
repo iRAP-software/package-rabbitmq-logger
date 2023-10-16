@@ -21,7 +21,11 @@ class RabbitmqQueueLogger implements LoggerInterface
     private string $m_queueName;
     private ?AMQPChannel $m_channel = null;
     private string $m_source = 'n/s';
-    private array $m_params;
+    private string $m_host;
+    private string $m_user;
+    private string $m_password;
+    private int $m_port;
+
 
     /**
      * Create the RabbitmqQueueLogger.
@@ -33,15 +37,20 @@ class RabbitmqQueueLogger implements LoggerInterface
      * @param string|null $source - optional - the name of the project that is using this library
      * @throws Exception
      */
-    public function __construct(string $host, string $user, string $password, string $queueName, int $port = 5672, string $source = null)
+    public function __construct(
+        string $host,
+        string $user,
+        string $password,
+        string $queueName,
+        int $port = 5672,
+        string $source = null
+    )
     {
         $this->m_queueName = $queueName;
-        $this->m_params = [
-            'host' => $host,
-            'port' => $port,
-            'user' => $user,
-            'password' => $password
-        ];
+        $this->m_host = $host;
+        $this->m_port = $port;
+        $this->m_user = $user;
+        $this->m_password = $password;
 
         // if the project constant is defined
         if (defined("SERVICE_NAME")) {
@@ -51,7 +60,6 @@ class RabbitmqQueueLogger implements LoggerInterface
         if ($source) {
             $this->m_source = $source;
         }
-
     }
 
     /**
@@ -158,7 +166,12 @@ class RabbitmqQueueLogger implements LoggerInterface
         static $connection = null;
 
         if ($connection === null) {
-            $connection = new AMQPStreamConnection(...$this->m_params);
+            $connection = new AMQPStreamConnection(
+                host: $this->m_host,
+                port: $this->m_port,
+                user: $this->m_user,
+                password: $this->m_password,
+            );
 
             $this->m_channel = $connection->channel();
 
