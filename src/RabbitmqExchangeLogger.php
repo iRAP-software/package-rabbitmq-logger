@@ -18,7 +18,10 @@ class RabbitmqExchangeLogger implements LoggerInterface
 {
     private ?AMQPChannel $m_channel = null;
     private string $m_exchangeName;
-    private array $m_params;
+    private string $m_host;
+    private string $m_user;
+    private string $m_password;
+    private int $m_port;
 
     /**
      * Create the RabbitmqExchangeLogger.
@@ -32,12 +35,10 @@ class RabbitmqExchangeLogger implements LoggerInterface
     public function __construct(string $host, string $username, string $password, string $exchangeName, int $port = 5672)
     {
         $this->m_exchangeName = $exchangeName;
-        $this->m_params = [
-            'host' => $host,
-            'port' => $port,
-            'user' => $username,
-            'password' => $password
-        ];
+        $this->m_host = $host;
+        $this->m_port = $port;
+        $this->m_user = $username;
+        $this->m_password = $password;
     }
 
 
@@ -140,7 +141,12 @@ class RabbitmqExchangeLogger implements LoggerInterface
         static $connection = null;
 
         if ($connection === null) {
-            $connection = new AMQPStreamConnection(...$this->m_params);
+            $connection = new AMQPStreamConnection(
+                host: $this->m_host,
+                port: $this->m_port,
+                user: $this->m_user,
+                password: $this->m_password,
+            );
 
             $this->m_channel = $connection->channel();
 
