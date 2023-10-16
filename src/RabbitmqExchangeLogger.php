@@ -30,15 +30,32 @@ class RabbitmqExchangeLogger implements LoggerInterface
      * @param string $password - the password to connect with.
      * @param string $exchangeName - the name of the exchange to publish to.
      * @param int $port - optional - the port of the server. Defaults to 5672.
+     * @param bool $connectImmediately - optional - override to false if you do not wish to have the logger immediately
+     * connect to the RabbitMQ host. This will prevent unnecessary connections to RabbitMQ in situations where nothing
+     * ended up needing to be logged. The default is to connect immediately because this was the previous behaviour.
+     * Connecting immediately will result in the code raising an exception at the point of creating the logger if there
+     * are any issues with connecting to RabbitMQ, rather than at the point of trying to log.
      * @throws Exception
      */
-    public function __construct(string $host, string $username, string $password, string $exchangeName, int $port = 5672)
+    public function __construct(
+        string $host,
+        string $username,
+        string $password,
+        string $exchangeName,
+        int $port = 5672,
+        bool $connectImmediately = true
+    )
     {
         $this->m_exchangeName = $exchangeName;
         $this->m_host = $host;
         $this->m_port = $port;
         $this->m_user = $username;
         $this->m_password = $password;
+
+        if ($connectImmediately)
+        {
+            $this->getChannel();
+        }
     }
 
 

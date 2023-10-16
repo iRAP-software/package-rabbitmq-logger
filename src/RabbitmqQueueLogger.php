@@ -35,6 +35,11 @@ class RabbitmqQueueLogger implements LoggerInterface
      * @param string $queueName - the name of the queue to publish to.
      * @param int $port - optional - the port of the server. Defaults to 5672.
      * @param string|null $source - optional - the name of the project that is using this library
+     * @param bool $connectImmediately - optional - override to false if you do not wish to have the logger immediately
+     * connect to the RabbitMQ host. This will prevent unnecessary connections to RabbitMQ in situations where nothing
+     * ended up needing to be logged. The default is to connect immediately because this was the previous behaviour.
+     * Connecting immediately will result in the code raising an exception at the point of creating the logger if there
+     * are any issues with connecting to RabbitMQ, rather than at the point of trying to log.
      * @throws Exception
      */
     public function __construct(
@@ -43,7 +48,8 @@ class RabbitmqQueueLogger implements LoggerInterface
         string $password,
         string $queueName,
         int $port = 5672,
-        string $source = null
+        string $source = null,
+        bool $connectImmediately = true
     )
     {
         $this->m_queueName = $queueName;
@@ -59,6 +65,11 @@ class RabbitmqQueueLogger implements LoggerInterface
         // overwrite the value if one is actually passed to the object
         if ($source) {
             $this->m_source = $source;
+        }
+
+        if ($connectImmediately)
+        {
+            $this->getChannel();
         }
     }
 
