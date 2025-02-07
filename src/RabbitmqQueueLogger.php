@@ -43,13 +43,13 @@ class RabbitmqQueueLogger implements LoggerInterface
      * @throws Exception
      */
     public function __construct(
-        string $host,
-        string $user,
-        string $password,
-        string $queueName,
-        int $port = 5672,
-        string $source = null,
-        bool $connectImmediately = true
+        string      $host,
+        string      $user,
+        string      $password,
+        string      $queueName,
+        int         $port = 5672,
+        string|null $source = null,
+        bool        $connectImmediately = true
     )
     {
         $this->m_queueName = $queueName;
