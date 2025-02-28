@@ -16,7 +16,7 @@
     "require": {
         "php": ">=8.0",
         "php-amqplib/php-amqplib": "3.*",
-        "irap/logging" : "2.1.*",
+        "irap/logging" : "dev-php8.4",
         "ext-json": "*"
     },
     "autoload": {
